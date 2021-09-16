@@ -1,0 +1,82 @@
+import React from "react";
+import {
+  Container,
+  Grid,
+  Paper,
+  TextField,
+  Button,
+  FormControl,
+  Typography
+} from "@material-ui/core";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import useStyles from "./AuthStyles";
+import { Link } from "react-router-dom";
+
+const ForgotPassword = () => {
+  const classes = useStyles();
+  return (
+    <>
+      <Container className={classes.boxContainer}>
+        <Grid container className={classes.justifyCenter}>
+          <Grid item md={4}>
+            <Paper
+              className={`${classes.loginBox} ${classes.hasBg}`}
+              elevation={2}
+            >
+              <Formik
+                initialValues={{ username: "", password: "" }}
+                validationSchema={Yup.object().shape({
+                  username: Yup.string()
+                    .required("Please enter your email")
+                    .email("Invalid username")
+                })}
+                onSubmit={(values) => {
+                  alert(JSON.stringify(values, null, 2));
+                }}
+              >
+                {(formik) => (
+                  <>
+                    <Form
+                      onSubmit={formik.handleSubmit}
+                      className={classes.flexForm}
+                    >
+                      <FormControl className={classes.field} fullWidth>
+                        <Field
+                          as={TextField}
+                          label="Email"
+                          type="text"
+                          placeholder="john@example.com"
+                          name="username"
+                        ></Field>
+                        <ErrorMessage
+                          component="span"
+                          name="username"
+                          className={classes.error}
+                        />
+                      </FormControl>
+                      <FormControl fullWidth className={classes.field}>
+                        <Button
+                          type="submit"
+                          color="primary"
+                          variant="contained"
+                        >
+                          Send Link
+                        </Button>
+                      </FormControl>
+
+                      <Typography className={classes.justifyRight}>
+                        <Link to="/"> Login</Link>
+                      </Typography>
+                    </Form>
+                  </>
+                )}
+              </Formik>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+    </>
+  );
+};
+export default ForgotPassword;
