@@ -1,0 +1,36 @@
+import "./styles.css";
+import Login from "./Auth/Login";
+import ForgotPassword from "./Auth/ForgotPassword";
+import { createTheme, ThemeProvider } from "@material-ui/core";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#A81D34"
+    },
+    secondary: {
+      main: "#A81D34"
+    }
+  }
+});
+
+export default function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <Router>
+          <Switch>
+            <Route path="/" exact>
+              <Login />
+            </Route>
+
+            <Route path="/resetPassword" exact>
+              <ForgotPassword />
+            </Route>
+          </Switch>
+        </Router>
+      </div>
+    </ThemeProvider>
+  );
+}
