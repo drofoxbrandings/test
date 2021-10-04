@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fz.fazaa.ae/fazaaforms/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://fz.fazaa.ae/fazaaforms/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fz.fazaa.ae/fazaaforms/css/components.css" rel="stylesheet" />
+    <link href="https://fz.fazaa.ae/fazaaforms/js/select2/select2.css" rel="stylesheet" />
+    <link href="https://fz.fazaa.ae/fazaaforms/js/bootstrap-datepicker/css/bootstrap-datepicker.min.css"
+        rel="stylesheet" />
+    <link href="https://fz.fazaa.ae/fazaaforms/css/custom.css?rndstr?version=1" rel="stylesheet" />
+
+
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <style>
+        .grad_bg {
+            background: linear-gradient(45deg, #184c9c, #c29d3c);
+        }
+
+        .h-100vh {
+            height: 100vh;
+        }
+
+        img {
+            width: 100%;
+        }
+
+        .m_border {
+            margin: 3px 3px;
+            padding: 3px;
+        }
+
+        /* #btn_container {
+            display: none;
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid h-100vh">
+        <div class="row d-flex h-100vh justify-content-center align-items-center">
+            <div class="col-md-8 col-lg-4">
+                <div class="custom_container d_flex flex-column grad_bg p_border p-1">
+                    <div id="btn_container" class="bg-white">
+                        <div class="row p-5">
+                            <div class="col-md-6">
+                                <p>
+                                    <img src="https://s3.ap-south-1.amazonaws.com/fazaaweb/images/fazaa-logo.png"
+                                        alt="Fazaa Logo" />
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <img src="https://cdn.freelogovectors.net/wp-content/uploads/2020/11/expo_2020_dubai_logo.png"
+                                        alt="Expo2020 logo" />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row p-3">
+                            <div class="col-md-12">
+                                <button type="button" id="getCode"
+                                    class="btn btn-primary btn-lg btn-block btn-circle btn-warning mt-3">Get Your Fazaa
+                                    Expo
+                                    Membership</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="qr_container">
+                        <div class="qr_code">
+                            <img src="" alt="qrcode" />
+                        </div>
+                        <div class="content text-white text-center">
+                            <h3 class="p-3">Get Your Exclusive Fazaa Expo Membership</h3>
+                            <p id="timer" class=""></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://fz.fazaa.ae/fazaaforms/js/jquery.js"></script>
+    <script src="https://fz.fazaa.ae/fazaaforms/js/bootstrap.js"></script>
+    <script src="https://fz.fazaa.ae/fazaaforms/js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://fz.fazaa.ae/fazaaforms/js/jquery-inputmask/jquery.inputmask.bundle.min.js"></script>
+    <script src="https://fz.fazaa.ae/fazaaforms/js/jquery.blockUI.js"></script>
+    <script src="https://fz.fazaa.ae/fazaaforms/js/jquery.validate.min.js"></script>
+    <script src="https://fz.fazaa.ae/fazaaforms/js/additional-methods.js"></script>
+    <script src="https://fz.fazaa.ae/fazaaforms/js/jquery.pulsate.min.js"></script>
+    <script src="https://fz.fazaa.ae/fazaaforms/js/brix.js"></script>
+
+    <script>
+        var Post_CallHandler = function (c_url, c_data) {
+            var response = {};
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                url: c_url,
+                data: c_data,
+                dataType: "json",
+                async: false,
+                cache: false,
+                //headers: { "Authorization": ls.get('ടോക്കൺ') },
+                success: function (data, textStatus, xhr) {
+                    response.httpstatuscode = xhr.status;
+                    response.responsebody = data;
+                },
+                error: function (xhr, textStatus, error) {
+                    if (typeof console == "object") {
+                        response.httpstatuscode = xhr.status;
+                        response.responsebody = error;
+                        //console.log(xhr.status + "," + xhr.responseText + "," + textStatus + "," + error);
+                    }
+                }
+            });
+
+            return response;
+        }
+
+        var Get_CallHandler = function (c_url) {
+            var response = {};
+            $.ajax({
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                url: c_url,
+                dataType: "json",
+                async: false,
+                cache: false,
+                //headers: { "Authorization": ls.get('ടോക്കൺ') },
+                success: function (data, textStatus, xhr) {
+                    response.httpstatuscode = xhr.status;
+                    response.responsebody = data;
+                },
+                error: function (xhr, textStatus, error) {
+                    if (typeof console == "object") {
+                        response.httpstatuscode = xhr.status;
+                        response.responsebody = error;
+                        //console.log(xhr.status + "," + xhr.responseText + "," + textStatus + "," + error);
+                    }
+                },
+                complete: function () {
+                    $('.icon-container').remove();
+                }
+            });
+
+            return response;
+        }
+
+
+        var generate_randomstring = function (length) {
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+
+        var myTimer = function () {
+            var d = new Date();
+            var t = d.toLocaleTimeString();
+            $("#timeClock").html(t);
+        }
+
+        $(document).ready(function () {
+            $("#qr_container").hide()
+
+            var minutes = 1, seconds = 30;
+            $(function () {
+                $("#timer").html("QR Code expires in " + seconds + "seconds");
+                var count = setInterval(function () {
+                    if (parseInt(seconds) < 0) { clearInterval(count); }
+                    else {
+                        $("#timer").html("QR Code expires in " + seconds + " seconds");
+                        if (seconds == 0) {
+                            minutes--;
+                            if (minutes < 10) minutes = "0" + minutes; seconds = 59;
+                        } seconds--;
+                        if (seconds < 10) minutes = "0" + seconds;
+                    }
+                }, 1000);
+            })
+
+
+            $("#getCode").on("click", function () {
+                $("#btn_container").hide()
+                $("#qr_container").show()
+                var hash = generate_randomstring(100)
+                $("#qr_container img").attr('src', 'https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=https://expo.fazaa.ae/register?id=' + hash)
+                setTimeout(() => {
+                    $("#qr_container").hide()
+                    $("#btn_container").show()
+                    $('#timer').text("");
+                }, 30000);
+            })
+        })
+    </script>
+    </div>
+</body>
+
+</html>
